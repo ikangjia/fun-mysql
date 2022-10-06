@@ -1,2 +1,11 @@
 server:
   port: 9001
+spring:
+  datasource:
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://121.36.42.97:3306/db_dms
+logging:
+  level:
+    cn.ikangjia.fun.mysql.mapper: debug

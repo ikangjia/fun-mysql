@@ -1,5 +1,6 @@
 package cn.ikangjia.fun.mysql.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -16,9 +17,18 @@ public class DataSourceDO {
     private Long id;
     private String name;
     private String type;
+
     private String host;
     private String port;
+
     private String defaultDb;
+    private String username;
+    private String password;
+
+    /*
+     * 数据源描述
+     */
+    private String description;
 
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
@@ -31,5 +41,6 @@ public class DataSourceDO {
     /*
      * 是否逻辑删除，1-删除，0-未删除
      */
+    @TableField("is_deleted")
     private boolean deleted;
 }
