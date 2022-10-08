@@ -12,17 +12,17 @@ import lombok.Setter;
 @Setter
 public class ResultVO<T> {
     private Integer code;
-    private T t;
+    private T data;
     private String msg;
 
-    public ResultVO(Integer code, T t, String msg) {
+    public ResultVO(Integer code, T data, String msg) {
         this.code = code;
-        this.t = t;
+        this.data = data;
         this.msg = msg;
     }
 
-    public static <T> ResultVO<T> success(T t) {
-        return new ResultVO<>(0, t, null);
+    public static <T> ResultVO<T> success(T data) {
+        return new ResultVO<>(0, data, null);
     }
 
     public static <T> ResultVO<T> error(String msg) {
