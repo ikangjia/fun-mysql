@@ -71,7 +71,7 @@ public class DataSourceServiceImpl implements DataSourceService {
 
     @Override
     public Boolean testConnection(DataSourceDO dataSourceDO) {
-
+        Long id = dataSourceDO.getId();
         return false;
     }
 }

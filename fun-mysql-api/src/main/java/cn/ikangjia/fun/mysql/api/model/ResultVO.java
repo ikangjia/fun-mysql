@@ -26,7 +26,7 @@ public class ResultVO<T> {
     }
 
     public static <T> ResultVO<T> error(String msg) {
-        return new ResultVO<>(-1, null, msg);
+        return new ResultVO<>(1, null, msg);
     }
 
 }
