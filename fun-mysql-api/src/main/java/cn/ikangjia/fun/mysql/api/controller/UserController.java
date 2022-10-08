@@ -23,14 +23,14 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResultVO<UserDO> getUser(@PathVariable Long id) {
-        return Optional.of(userService.getUser(id))
+        return Optional.ofNullable(userService.getUser(id))
                 .map(ResultVO::success)
                 .orElseThrow();
     }
 
     @PostMapping("/doLogin")
     public ResultVO<String> getUser(@RequestBody UserDO userDO) {
-        return Optional.of(userService.doLogin(userDO))
+        return Optional.ofNullable(userService.doLogin(userDO))
                 .map(ResultVO::success)
                 .orElseThrow();
     }

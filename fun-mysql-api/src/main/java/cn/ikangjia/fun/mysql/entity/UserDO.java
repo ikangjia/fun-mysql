@@ -25,6 +25,6 @@ public class UserDO {
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
-    @TableField("id_deleted")
+    @TableField("is_deleted")
     private boolean deleted;
 }
