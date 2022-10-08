@@ -55,6 +55,7 @@ export default {
               })
             } else {
               ElMessage.error(data.msg)
+              window.localStorage.setItem('token', '')
             }
           })
     }
