@@ -1,10 +1,15 @@
 <template>
-数据源页面
+  数据源页面 {{this.$route.query.account}}
 </template>
 
 <script>
 export default {
-  name: "DataSourceView"
+  name: "DataSourceView",
+  data() {
+    return {
+      currentUser: {}
+    }
+  }
 }
 </script>
 
