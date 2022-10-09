@@ -2,6 +2,7 @@ package cn.ikangjia.fun.mysql.service.impl;
 
 import cn.ikangjia.fun.mysql.api.query.PageQuery;
 import cn.ikangjia.fun.mysql.api.vo.DataSourceVO;
+import cn.ikangjia.fun.mysql.core.DataSourceUtil;
 import cn.ikangjia.fun.mysql.entity.DataSourceDO;
 import cn.ikangjia.fun.mysql.mapper.DataSourceMapper;
 import cn.ikangjia.fun.mysql.service.DataSourceService;
@@ -72,6 +73,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public Boolean testConnection(DataSourceDO dataSourceDO) {
         Long id = dataSourceDO.getId();
-        return false;
+        DataSourceDO sourceDO = dataSourceMapper.selectById(1L);
+        return DataSourceUtil.testConnection(sourceDO);
     }
 }
