@@ -3,10 +3,13 @@ package cn.ikangjia.fun.mysql.core;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SQL 执行器
@@ -24,13 +27,65 @@ public class ExecuteHandler {
         this.jdbcThreadLocal = jdbcThreadLocal;
     }
 
-    public void execute(String sql){
-        try (Statement statement = this.getStatement()){
+    public void execute(String sql) {
+        try (Statement statement = this.getStatement()) {
             statement.execute(sql);
         } catch (SQLException e) {
             throw new DMSException(e.getMessage(), e);
         }
     }
+
+    public List<Object> executeQuery(Class t, String sql, String... params) {
+        try (PreparedStatement statement = this.getPrepareStatement(sql, params)) {
+            ResultSet rs = statement.executeQuery();
+            return doObjectResult(t, rs);
+        } catch (SQLException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private List<Object> doObjectResult(Class t, ResultSet rs) throws SQLException, InstantiationException, IllegalAccessException {
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        Field[] fields = t.getDeclaredFields();
+
+        List<Object> result = new ArrayList<>(columnCount);
+        while (rs.next()) {
+            Object o = t.newInstance();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                field.set(o, String.valueOf(rs.getObject(field.getName())));
+            }
+            result.add(o);
+        }
+        return result;
+    }
+
+    public List<Map<String, Object>> executeQuery(String sql, String... params) {
+        try (PreparedStatement statement = this.getPrepareStatement(sql, params)) {
+            ResultSet rs = statement.executeQuery();
+            return doMapResult(rs);
+        } catch (SQLException e) {
+            throw new DMSException(e.getMessage(), e);
+        }
+    }
+
+    private List<Map<String, Object>> doMapResult(ResultSet rs) throws SQLException {
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        List<Map<String, Object>> result = new ArrayList<>(columnCount);
+        while (rs.next()) {
+            Map<String, Object> temMap = new HashMap<>();
+            for (int i = 0; i < columnCount; i++) {
+                temMap.put(metaData.getColumnLabel(i + 1), rs.getObject(i + 1));
+            }
+            result.add(temMap);
+        }
+        return result;
+    }
+
 
     private Statement getStatement() {
         Connection context = jdbcThreadLocal.getContext();
@@ -42,7 +97,7 @@ public class ExecuteHandler {
         }
     }
 
-    private Statement getPrepareStatement(String sqlTemplate, String... params) {
+    private PreparedStatement getPrepareStatement(String sqlTemplate, String... params) {
         Connection context = jdbcThreadLocal.getContext();
         try {
             PreparedStatement statement = context.prepareStatement(sqlTemplate);
@@ -50,7 +105,7 @@ public class ExecuteHandler {
                 return statement;
             }
             for (int i = 0, j = params.length; i < j; i++) {
-                statement.setObject(i+1, params[i]);
+                statement.setObject(i + 1, params[i]);
             }
             return statement;
         } catch (SQLException e) {
